@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import './App.css'
-import axios from 'axios';
+import axios from 'axios'
 
 const App: React.FC = () => {
 
   const [songName, setSongName] = useState<string>('');
   const [albumCoverUrl, setAlbumCoverUrl] = useState<string>('');
+  const [albumName, setAlbumName] = useState<string>('');
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   const handleLogin = async () => {
     try {
@@ -21,13 +23,19 @@ const App: React.FC = () => {
       try {
         const urlParams = new URLSearchParams(window.location.search);
         const accessToken = urlParams.get('access_token');
-        const response = await axios.get('http://localhost:8080/current-song', {
+
+        if (accessToken) {
+          const response = await axios.get('http://localhost:8080/current-song', {
             params: { access_token: accessToken },
           });
-        const { currentSong, albumCoverUrl } = response.data;
-        
-        setSongName(currentSong);
-        setAlbumCoverUrl(albumCoverUrl);
+          const { currentSong, albumCoverUrl, albumName } = response.data
+          setSongName(currentSong)
+          setAlbumCoverUrl(albumCoverUrl)
+          setAlbumName(albumName)
+          setLoggedIn(true)
+        } else {
+          setLoggedIn(false)
+        }
       } catch (error) {
         console.error(error)
       }
@@ -36,16 +44,19 @@ const App: React.FC = () => {
     fetchCurrentSong();
   }, [])
 
-  return(
+  return (
     <div>
-      <h1>Spotify App</h1>
       <div>
+        { !loggedIn ?
         <button onClick={handleLogin}>Login with Spotify</button>
+        :
+        <></>
+        }
       </div>
       <div>
-        <h2>Currently Playing:</h2>
-        <p>Song: {songName}</p>
-        <img src={albumCoverUrl} alt="Album Cover" style={{ width: '200px', height: '200px' }} />
+        <h1>{songName}</h1>
+        <h2>{albumName}</h2>
+        <img src={albumCoverUrl} alt="Album Cover" style={{ width: '800px', height: '800px' }} />
       </div>
     </div>
   )
