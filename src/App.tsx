@@ -11,7 +11,7 @@ const App: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      window.location.href = 'http://localhost:8080/login';
+      window.location.href = 'http://file.vault:8080/login';
     } catch (error) {
       console.error(error)
     }
@@ -25,7 +25,7 @@ const App: React.FC = () => {
         const accessToken = urlParams.get('access_token');
 
         if (accessToken) {
-          const response = await axios.get('http://localhost:8080/current-song', {
+          const response = await axios.get('http://file.vault:8080/current-song', {
             params: { access_token: accessToken },
           });
           const { currentSong, albumCoverUrl, albumName } = response.data
@@ -60,7 +60,6 @@ const App: React.FC = () => {
       </div>
     </div>
   )
-
 }
 
 export default App;
